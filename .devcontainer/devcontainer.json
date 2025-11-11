@@ -16,6 +16,12 @@
         "gopls": {
           "ui.semanticTokens": true
         },
+        "[go]":{
+            "editor.formatOnSave": true
+            // "editor.codeActionsOnSave": {
+            //     "source.organizeImports": true
+            // }
+        },
         "go.toolsManagement.autoUpdate": true,
         "go.testFlags": ["-v"],
 
