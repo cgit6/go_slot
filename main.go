@@ -6,6 +6,8 @@ import (
 	"runtime"
 )
 
+// ok
+
 func main() {
 	fmt.Println("✅ Hello from Go in Codespaces!")
 
