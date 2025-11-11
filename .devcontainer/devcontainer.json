@@ -1,0 +1,49 @@
+{
+  "name": "Go Stable Env",
+  "image": "mcr.microsoft.com/devcontainers/go:1.23-bookworm", // 你可以改成 go:1.23-bookworm 之類的更精確版本
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "golang.go",
+        "formulahendry.code-runner",
+        "esbenp.prettier-vscode",
+        "monokai.theme-monokai-pro-vscode",
+        "pkief.material-icon-theme"
+      ],
+      "settings": {
+        // Go & gopls
+        "gopls": {
+          "ui.semanticTokens": true
+        },
+        "go.toolsManagement.autoUpdate": true,
+        "go.testFlags": ["-v"],
+
+        // Code Runner 改成跑 go
+        "code-runner.executorMap": {
+          "go": "go run \"$fileName\""
+        },
+        "code-runner.runInTerminal": true,
+        "code-runner.fileDirectoryAsCwd": true,
+        "code-runner.ignoreSelection": true,
+        "code-runner.saveFileBeforeRun": true
+      }
+    }
+  },
+
+  // ====== 跟 prebuild 相關的三個 hook ======
+  // 這兩個會在「prebuild 建立時」就被跑完
+  // onCreateCommand：只在第一次建立 prebuild 時跑一次
+  "onCreateCommand": "bash -lc 'set -e; if [ -f go.mod ]; then go mod download; fi'",
+
+  // updateContentCommand：每次 prebuild 更新都會跑（例如每次 push）:contentReference[oaicite:0]{index=0}
+  "updateContentCommand": "bash -lc 'set -e; if [ -f go.mod ]; then go test ./... || true; fi'",
+
+  // postCreateCommand：只在「真正建立你的 Codespace」時才跑，不會包含在 prebuild 裡:contentReference[oaicite:1]{index=1}
+  "postCreateCommand": "bash -lc 'go version && echo \"Workspace ready\"'",
+
+  // 這個每次容器啟動時跑（可有可無）
+  "postStartCommand": "bash -lc 'go env GOPATH; go env GOMODCACHE || true'",
+
+  "remoteUser": "vscode"
+}
