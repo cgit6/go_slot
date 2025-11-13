@@ -2,7 +2,7 @@
 
 [計劃書](https://hackmd.io/@chiSean/rkGvg3Wxbl) 
 
-## 進度
+## 完成進度
 []Config struct         
 []ScreenGenerator struct
 []LineResult struct

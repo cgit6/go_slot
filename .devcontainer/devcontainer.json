@@ -10,7 +10,7 @@
         "esbenp.prettier-vscode",
         "monokai.theme-monokai-pro-vscode",
         "pkief.material-icon-theme"
-      ],
+      ]
       // "settings": {
       //   // Go & gopls
       //   "gopls": {
@@ -46,7 +46,7 @@
   "updateContentCommand": "bash -lc 'set -e; if [ -f go.mod ]; then go test ./... || true; fi'",
 
   // postCreateCommand：只在「真正建立你的 Codespace」時才跑，不會包含在 prebuild 裡:contentReference[oaicite:1]{index=1}
-  "postCreateCommand": "bash -lc 'go version && echo \"Workspace ready\"'",
+  "postCreateCommand": "bash .devcontainer/postCreate.sh",
 
   // 這個每次容器啟動時跑（可有可無）
   "postStartCommand": "bash -lc 'go env GOPATH; go env GOMODCACHE || true'",
