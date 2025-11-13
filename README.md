@@ -3,7 +3,7 @@
 [計劃書](https://hackmd.io/@chiSean/rkGvg3Wxbl) 
 
 ## 完成進度
-[]Config struct         
+[-]Config struct         
 []ScreenGenerator struct
 []LineResult struct
 []ScreenResult struct
