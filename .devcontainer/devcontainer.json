@@ -11,29 +11,29 @@
         "monokai.theme-monokai-pro-vscode",
         "pkief.material-icon-theme"
       ],
-      "settings": {
-        // Go & gopls
-        "gopls": {
-          "ui.semanticTokens": true
-        },
-        "[go]":{
-            "editor.formatOnSave": true
-            // "editor.codeActionsOnSave": {
-            //     "source.organizeImports": true
-            // }
-        },
-        "go.toolsManagement.autoUpdate": true,
-        "go.testFlags": ["-v"],
+      // "settings": {
+      //   // Go & gopls
+      //   "gopls": {
+      //     "ui.semanticTokens": true
+      //   },
+      //   "[go]":{
+      //       "editor.formatOnSave": true
+      //       // "editor.codeActionsOnSave": {
+      //       //     "source.organizeImports": true
+      //       // }
+      //   },
+      //   "go.toolsManagement.autoUpdate": true,
+      //   "go.testFlags": ["-v"],
 
-        // Code Runner 改成跑 go
-        "code-runner.executorMap": {
-          "go": "go run \"$fileName\""
-        },
-        "code-runner.runInTerminal": true,
-        "code-runner.fileDirectoryAsCwd": true,
-        "code-runner.ignoreSelection": true,
-        "code-runner.saveFileBeforeRun": true
-      }
+      //   // Code Runner 改成跑 go
+      //   "code-runner.executorMap": {
+      //     "go": "go run \"$fileName\""
+      //   },
+      //   "code-runner.runInTerminal": true,
+      //   "code-runner.fileDirectoryAsCwd": true,
+      //   "code-runner.ignoreSelection": true,
+      //   "code-runner.saveFileBeforeRun": true
+      // }
     }
   },
 
@@ -52,4 +52,5 @@
   "postStartCommand": "bash -lc 'go env GOPATH; go env GOMODCACHE || true'",
 
   "remoteUser": "vscode"
+
 }

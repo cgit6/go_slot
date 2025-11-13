@@ -1,0 +1,15 @@
+{
+  // 只對 Go 生效的設定
+  "[go]": {
+    "editor.defaultFormatter": "golang.go",
+    "editor.formatOnSave": true
+  },
+
+  // 存檔時自動整理 import（新增/移除/排序）
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": true
+  },
+
+  //（可選）使用更嚴謹的 gofumpt 風格
+  "go.formatTool": "gofumpt"
+}

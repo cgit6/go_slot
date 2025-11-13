@@ -1,28 +1,94 @@
 package main
 
-import (
-	"fmt"
-	"os"
-	"runtime"
+type GameMode int
+
+const (
+	ModeLine GameMode = iota // 0 -> Line
+	ModeWays                 // 1 -> Ways
 )
 
-// ok
+// 輪帶表
+var REELSTRIPS = [][]int{
+	{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 2, 3, 4, 5, 6, 7, 8, 9, 10},
+	{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 2, 3, 4, 5, 6, 7, 8, 9, 10},
+	{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 2, 3, 4, 5, 6, 7, 8, 9, 10},
+	{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 2, 3, 4, 5, 6, 7, 8, 9, 10},
+	{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 2, 3, 4, 5, 6, 7, 8, 9, 10},
+}
+
+// 11 個有效符號
+var SYMBOLS = []string{"None", "Scatter", "Wild", "H1", "H2", "H3", "H4", "L1", "L2", "L3", "L4", "L5"}
+
+// 20 線路表
+var LINES = [][]int{
+	{1, 1, 1, 1, 1},
+	{0, 0, 0, 0, 0},
+	{2, 2, 2, 2, 2},
+	{0, 1, 2, 1, 0},
+	{2, 1, 0, 1, 2},
+	{1, 0, 0, 0, 1},
+	{1, 2, 2, 2, 1},
+	{0, 0, 1, 2, 2},
+	{2, 2, 1, 0, 0},
+	{1, 0, 1, 2, 1},
+	{1, 2, 1, 0, 1},
+	{0, 1, 1, 1, 0},
+	{2, 1, 1, 1, 2},
+	{0, 1, 0, 1, 0},
+	{2, 1, 2, 1, 2},
+	{1, 1, 0, 1, 1},
+	{1, 1, 2, 1, 1},
+	{0, 0, 2, 0, 0},
+	{2, 2, 0, 2, 2},
+	{0, 2, 2, 2, 0},
+}
+
+// 賠率表
+var PAYTABLE = [][]int{
+	{0, 0, 0, 0, 0},       // Z1
+	{0, 0, 0, 0, 0},       // C1 (Scatter)
+	{0, 0, 100, 200, 300}, // W1 (Wild)
+	{0, 0, 10, 50, 200},   // H1
+	{0, 0, 10, 50, 200},   // H2
+	{0, 0, 10, 50, 200},   // H3
+	{0, 0, 10, 50, 200},   // H4
+	{0, 0, 5, 20, 100},    // L1
+	{0, 0, 5, 20, 100},    // L2
+	{0, 0, 5, 20, 100},    // L3
+	{0, 0, 5, 20, 100},    // L4
+	{0, 0, 5, 20, 100},    // L5
+}
+
+var ROWS int = 3
+var COLS int = 5
+
+type Config struct {
+	// 設定檔有的數值
+	ReelStrips [][]uint8 // 輪帶表
+	Symbols    []string  // 符號清單
+	Lines      [][]int   // 線獎組合
+	Paytable   [][]int   // 賠率表
+	Rows       int       // 列數
+	Cols       int       // 軸數
+	Mode       GameMode  // 算分模式(enum)
+
+	// 設定檔案沒有的靜態數值
+	ScreenSize int   // 盤面大小
+	ReelLens   []int // 每一軸輪帶長度
+
+	// 初始化狀態
+	initFlag bool // 初始化旗標
+
+}
+
+func NewConfig(gameName enum) *Config {
+	//
+}
 
 func main() {
-	fmt.Println("✅ Hello from Go in Codespaces!")
+	runner() // 執行模擬
+}
 
-	// 顯示 Go 版本
-	fmt.Println("Go version:", runtime.Version())
+func runner() {
 
-	// 顯示目前工作目錄
-	if wd, err := os.Getwd(); err == nil {
-		fmt.Println("Working directory:", wd)
-	}
-
-	// 顯示傳進來的參數（如果有）
-	if len(os.Args) > 1 {
-		fmt.Println("Args:", os.Args[1:])
-	} else {
-		fmt.Println("No extra args. Try: go run main.go foo bar")
-	}
 }
