@@ -1,5 +1,5 @@
 package main
 
 func main() {
-	run() // 執行模擬
+	runner() // 執行模擬
 }

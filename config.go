@@ -2,15 +2,17 @@ package main
 
 import "errors"
 
+// type SymbolID uint8 // 之後可以統一使用
 type GameMode int
 
 const (
-	ModeLine GameMode = iota // 0 -> Line
-	ModeWays                 // 1 -> Ways
+	ModeUnknown GameMode = iota // 0 -> unknown
+	ModeLines                   // 1 -> Line
+	ModeWays                    // 2 -> Ways
 )
 
 // 輪帶表
-var REELSTRIPS = [][]int{
+var REELSTRIPS = [][]uint8{
 	{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 2, 3, 4, 5, 6, 7, 8, 9, 10}, // 第 1 軸
 	{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 2, 3, 4, 5, 6, 7, 8, 9, 10}, // 第 2 軸
 	{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 2, 3, 4, 5, 6, 7, 8, 9, 10}, // 第 3 軸
@@ -23,9 +25,9 @@ var SYMBOLS = []string{"None", "Scatter", "Wild", "H1", "H2", "H3", "H4", "L1", 
 
 // 20 線路表
 var LINES = [][]int{
-	{1, 1, 1, 1, 1},
-	{0, 0, 0, 0, 0},
-	{2, 2, 2, 2, 2},
+	{1, 1, 1, 1, 1}, // 線路 1
+	{0, 0, 0, 0, 0}, // 線路 2
+	{2, 2, 2, 2, 2}, // ...
 	{0, 1, 2, 1, 0},
 	{2, 1, 0, 1, 2},
 	{1, 0, 0, 0, 1},
@@ -64,21 +66,43 @@ var PAYTABLE = [][]int{
 var ROWS, COLS int = 3, 5 // 列數, 行數
 
 type Config struct {
-	// 設定檔有的數值
-	ReelStrips [][]int  // 輪帶表
-	Symbols    []string // 符號清單
-	Lines      [][]int  // 線獎組合
-	Paytable   [][]int  // 賠率表
-	Rows       int      // 列數
-	Cols       int      // 軸數
-	Mode       GameMode // 算分模式(enum)
+	// 設定檔的數值
+	ReelStrips [][]uint8 // 輪帶表
+	Symbols    []string  // 符號清單
+	Lines      [][]int   // 線獎組合
+	Paytable   [][]int   // 賠率表
+	Rows       int       // 列數
+	Cols       int       // 軸數
+	Mode       GameMode  // 算分模式(enum)
 
-	// 設定檔案沒有的靜態數值
+	// 輔助的數值
 	ScreenSize int   // 盤面大小
 	ReelLens   []int // 每一軸輪帶長度
 
 	// 初始化狀態
 	initFlag bool // 初始化旗標
+
+}
+
+// 建構函數: 創建 instance 時調用
+func NewConfig(reelStrips [][]uint8, symbols []string, lines [][]int, payTable [][]int, rows int, cols int, mode GameMode) (*Config, error) {
+	// 1. 創建 Config instance & 賦值
+	cfg := &Config{
+		ReelStrips: reelStrips, // 輪帶表
+		Symbols:    symbols,    // 符號清單
+		Lines:      lines,      // 線路清單
+		Paytable:   payTable,   // 賠率表
+		Rows:       rows,       // 列數
+		Cols:       cols,       // 行數
+		Mode:       mode,       // 算分模式
+	}
+
+	// 2. 執行初始化
+	if err := cfg.Init(); err != nil {
+		return nil, err
+	}
+	// 3. 返回值, 錯誤訊息
+	return cfg, nil
 
 }
 
@@ -106,6 +130,20 @@ func (c *Config) Init() error {
 	return nil
 }
 
+func (c *Config) Reset() error {
+
+	// 檢查 initFlag 狀態
+	if !c.initFlag {
+		return errors.New("not yet init")
+	}
+
+	// 重新初始化
+	c.initFlag = false
+	c.Init()
+
+	return nil
+}
+
 func (c *Config) validate() error {
 
 	// 1. Rows/Cols
@@ -122,12 +160,13 @@ func (c *Config) validate() error {
 	}
 
 	// 3. 符號清單，這邊怪怪的感覺有很多例外
-	if len(c.Symbols) == 0 {
-		return errors.New("symbols must not be emypt")
+	symLen := len(c.Symbols)
+	if symLen == 0 {
+		return errors.New("symbols must not be empty")
 	}
 
 	// 4. Line Mode
-	if c.Mode == ModeLine {
+	if c.Mode == ModeLines {
 		if len(c.Lines) == 0 {
 			return errors.New("line must not be emypt")
 		}
@@ -137,33 +176,20 @@ func (c *Config) validate() error {
 		// }
 	}
 
+	if c.Mode == ModeWays {
+		return errors.New("未實作")
+	}
+
 	// 5. PayTable： 每個符號 5 欄（1~5 連）
+	if len(c.Paytable) != symLen {
+		return errors.New("paytable size not correct")
+	}
 
 	// 6. 模式檢查
+	// 這邊應該改成不存在於 GameMode enum 清單中，或是 =0
+	if c.Mode != ModeLines && c.Mode != ModeWays {
+		return errors.New("invalid mode")
+	}
 
 	return nil
-}
-
-// func
-
-// 建構函數: 創建 instance 時調用
-func NewConfig(reelStrips [][]int, symbols []string, lines [][]int, payTable [][]int, rows, cols int, mode GameMode) (*Config, error) {
-	// 1. 賦值
-	cfg := &Config{
-		ReelStrips: reelStrips,
-		Symbols:    symbols,
-		Lines:      lines,
-		Paytable:   payTable,
-		Rows:       rows,
-		Cols:       cols,
-		Mode:       mode,
-	}
-
-	// 2. 執行初始化
-	if err := cfg.Init(); err != nil {
-		return nil, err
-	}
-
-	return cfg, nil
-
 }
