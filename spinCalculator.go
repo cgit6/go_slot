@@ -12,6 +12,18 @@ type ScreenResult struct {
 	TotalBets int     // 累積總下注
 }
 
+// 建構函數: 創建 NewScreenResult instance 時調用
+func NewScreenResult() *ScreenResult {
+	r := &ScreenResult{
+		Screen:    []uint8{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // 這樣寫容易錯
+		C1Count:   0,
+		TotalPay:  0,
+		TotalWins: 0,
+		TotalBets: 0,
+	}
+	return r
+}
+
 // 輸入 盤面與 1 次 spin 下注分數
 type CalcFunc func(*SpinCalculator, []uint8, int) *ScreenResult // 接收 *SpinCalculator
 
@@ -21,6 +33,7 @@ type SpinCalculator struct {
 	calcFn        CalcFunc // 算分函數
 }
 
+// 建構函數: 創建 NewSpinCalculator instance 時調用
 func NewSpinCalculator(cfg *Config, screenResult *ScreenResult) *SpinCalculator {
 	if screenResult == nil {
 		screenResult = &ScreenResult{}
@@ -32,8 +45,11 @@ func NewSpinCalculator(cfg *Config, screenResult *ScreenResult) *SpinCalculator 
 
 // 維護一個map註冊表
 var calcFnMap = map[GameMode]CalcFunc{
-	ModeLines: (*SpinCalculator).calcLinesGame, // lines 算法
-	ModeWays:  (*SpinCalculator).calcWaysGame,  // ways 算法
+	ModeLines: CalcLinesGame, // lines 算法
+	ModeWays:  CalcWaysGame,  // ways 算法
+
+	// 特殊符號
+
 }
 
 // 選擇計算方式
@@ -41,10 +57,13 @@ func (s *SpinCalculator) initCalcFn() {
 
 	// 選擇算分策略
 	if fn, ok := calcFnMap[s.Mode]; ok {
-		s.calcFn = fn
+		s.calcFn = fn // 選擇算分方式存到 s.calcFn
+
+		return // 必要，不然會往外跳執行 log.Fatal("未知 mode")
 	}
 	log.Fatal("未知 mode")
-	// panic 表示還有救，類似 try ... catch ...
+	// panic 表示還有救，但這個沒救了(設定檔錯誤)，類似 try ... catch ...
+	// 這邊可以用 errors.New() 嗎?
 
 }
 
@@ -54,12 +73,22 @@ func CalcScreen(s *SpinCalculator, screen []uint8, bet int) *ScreenResult {
 }
 
 // ------- 不同算分模式的內部函數 -------
-func (s *SpinCalculator) calcLinesGame(screen []uint8, bet int) *ScreenResult {
-	// TODO: 填入 lines 計分，寫入 s.ScreenResult 後回傳
+func CalcLinesGame(s *SpinCalculator, screen []uint8, bet int) *ScreenResult {
+
+	// 1. 計算每一條線的 C1 / wildCount / symId / symCount / pay
+
+	for i := 0; i < s.ScreenSize; i++ {
+
+	}
+
+	// 3.1. TotalWin = C1 賠率 * Bet
+
+	// 3.2. TotalWin = TotalLinePay * Bet / 線數
+
 	return s.ScreenResult
 }
 
-func (s *SpinCalculator) calcWaysGame(screen []uint8, bet int) *ScreenResult {
-	// TODO: 填入 ways 計分，寫入 s.ScreenResult 後回傳
+func CalcWaysGame(s *SpinCalculator, screen []uint8, bet int) *ScreenResult {
+	// 未實做
 	return s.ScreenResult
 }

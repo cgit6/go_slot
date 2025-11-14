@@ -36,16 +36,16 @@
     [v]struct
 [v]ScreenResult struct
     [v]struct
-[]SpinCalculator struct
-    []struct
-    []calcFnMap
-    []initCalcFunc
-    []CalcScreen
-    []CalcLineGame
-    []CalcWaysGame
+[-]SpinCalculator struct
+    [v]struct
+    [v]calcFnMap
+    [v]initCalcFunc
+    [v]CalcScreen
+    [-]CalcLineGame
+    [x]CalcWaysGame
 
-[]runner func
-    []runner
+[-]runner func
+    [-]runner
 
-
-
+## 錯誤的種類
+設定擋案錯誤 -> log.Fatal()

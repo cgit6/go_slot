@@ -8,7 +8,7 @@ type ScreenGenerator struct {
 	rng       *rand.Rand // RNG
 }
 
-// 建構函數: 創建 instance 時調用
+// 建構函數: 創建 ScreenGenerator instance 時調用
 func NewScreenGenerator(cfg *Config, rng *rand.Rand) *ScreenGenerator {
 
 	// 創建 ScreenGenerator instance & 賦值

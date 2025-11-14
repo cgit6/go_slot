@@ -21,7 +21,7 @@ var REELSTRIPS = [][]uint8{
 }
 
 // 11 個有效符號
-var SYMBOLS = []string{"None", "Scatter", "Wild", "H1", "H2", "H3", "H4", "L1", "L2", "L3", "L4", "L5"}
+var SYMBOLS = []string{"None", "C1", "W1", "H1", "H2", "H3", "H4", "L1", "L2", "L3", "L4", "L5"}
 
 // 20 線路表
 var LINES = [][]int{
@@ -44,7 +44,7 @@ var LINES = [][]int{
 	{1, 1, 2, 1, 1},
 	{0, 0, 2, 0, 0},
 	{2, 2, 0, 2, 2},
-	{0, 2, 2, 2, 0},
+	{0, 2, 2, 2, 0}, // 線路 20
 }
 
 // 賠率表
@@ -78,6 +78,8 @@ type Config struct {
 	// 輔助的數值
 	ScreenSize int   // 盤面大小
 	ReelLens   []int // 每一軸輪帶長度
+	C1Id       int   // scatter 索引值
+	W1Id       int   // wild 索引值
 
 	// 初始化狀態
 	initFlag bool // 初始化旗標
@@ -123,6 +125,17 @@ func (c *Config) Init() error {
 	c.ReelLens = make([]int, c.Cols) // 輪帶長度清單
 	for col := 0; col < c.Cols; col++ {
 		c.ReelLens[col] = len(c.ReelStrips[col])
+	}
+
+	// 4. 找到特殊符號索引
+	for i := 0; i < len(c.Symbols); i++ {
+		if c.Symbols[i] == "C1" {
+			c.C1Id = i
+		}
+
+		if c.Symbols[i] == "W1" {
+			c.W1Id = i
+		}
 	}
 
 	// 4. 更新初始化狀態
