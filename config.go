@@ -78,8 +78,8 @@ type Config struct {
 	// 輔助的數值
 	ScreenSize int   // 盤面大小
 	ReelLens   []int // 每一軸輪帶長度
-	C1Id       int   // scatter 索引值
-	W1Id       int   // wild 索引值
+	C1Id       uint8 // scatter 索引值
+	W1Id       uint8 // wild 索引值
 
 	// 初始化狀態
 	initFlag bool // 初始化旗標
@@ -128,7 +128,8 @@ func (c *Config) Init() error {
 	}
 
 	// 4. 找到特殊符號索引
-	for i := 0; i < len(c.Symbols); i++ {
+	var i uint8 = 0
+	for i < uint8(len(c.Symbols)) {
 		if c.Symbols[i] == "C1" {
 			c.C1Id = i
 		}
@@ -136,6 +137,8 @@ func (c *Config) Init() error {
 		if c.Symbols[i] == "W1" {
 			c.W1Id = i
 		}
+
+		i++
 	}
 
 	// 4. 更新初始化狀態

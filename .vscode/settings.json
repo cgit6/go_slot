@@ -7,7 +7,7 @@
 
   // 存檔時自動整理 import（新增/移除/排序）
   "editor.codeActionsOnSave": {
-    "source.organizeImports": true
+    "source.organizeImports": "explicit"
   },
 
   //（可選）使用更嚴謹的 gofumpt 風格
