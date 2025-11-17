@@ -81,6 +81,7 @@ type Config struct {
 	C1Id       uint8 // scatter 索引值
 	W1Id       uint8 // wild 索引值
 	minLen     int   // 最小連線長度
+	FlatLines  []int // 平坦化線路清單
 
 	// 初始化狀態
 	initFlag bool // 初始化旗標
@@ -143,7 +144,15 @@ func (c *Config) Init() error {
 		i++
 	}
 
-	// 4. 更新初始化狀態
+	// 5. 平坦化線路清單
+	c.FlatLines = make([]int, len(c.Lines)*c.Cols)
+	for i, line := range c.Lines {
+		for j, pos := range line {
+			c.FlatLines[i*c.Cols+j] = j*c.Rows + pos
+		}
+	}
+
+	// 6. 更新初始化狀態
 	c.initFlag = true
 	return nil
 }
