@@ -17,8 +17,6 @@ func NewScreenGenerator(cfg *Config, rng *rand.Rand) *ScreenGenerator {
 		ScreenBuf: make([]uint8, cfg.ScreenSize), // 盤面緩存
 		rng:       rng,                           // RNG
 	}
-
-	// 這邊有需要再做錯誤處理嗎?
 }
 
 // 盤面生成
@@ -34,27 +32,3 @@ func (g *ScreenGenerator) GenScreen() []uint8 {
 
 	return g.ScreenBuf
 }
-
-// func (g *ScreenGenerator) GenScreen2() []uint8 {
-// 	rows, cols := g.Rows, g.Cols
-//  // 1 lv loop remove %
-// 	for col := 0; col < cols; col++ {
-// 		strip := g.ReelStrips[col] // []SymbolID
-// 		L := len(strip)
-// 		start := g.rng.Intn(L)
-// 		off := col * rows
-
-// 		// 不繞回的那一段
-// 		first := rows
-// 		if rem := L - start; first > rem {
-// 			first = rem
-// 		}
-// 		copy(g.ScreenBuf[off:off+first], strip[start:start+first])
-
-// 		// 繞回的那一段（如果需要）
-// 		if first < rows {
-// 			copy(g.ScreenBuf[off+first:off+rows], strip[:rows-first])
-// 		}
-// 	}
-// 	return g.ScreenBuf
-// }

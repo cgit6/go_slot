@@ -24,7 +24,6 @@
     [v]Init
     [v]Reset
     [v]validate
-        * 感覺還是缺一些東西
     [v]NewConfig
 
 [v]ScreenGenerator struct
@@ -41,11 +40,11 @@
     [v]calcFnMap
     [v]initCalcFunc
     [v]CalcScreen
-    [-]CalcLineGame
+    [v]CalcLineGame
     [x]CalcWaysGame
 
-[-]runner func
-    [-]runner
+[v]runner func
+    [v]runner
 
 ## 錯誤的種類
 設定擋案錯誤 -> log.Fatal()

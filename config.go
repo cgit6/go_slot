@@ -80,6 +80,7 @@ type Config struct {
 	ReelLens   []int // 每一軸輪帶長度
 	C1Id       uint8 // scatter 索引值
 	W1Id       uint8 // wild 索引值
+	minLen     int   // 最小連線長度
 
 	// 初始化狀態
 	initFlag bool // 初始化旗標
@@ -96,6 +97,7 @@ func NewConfig(reelStrips [][]uint8, symbols []string, lines [][]int, payTable [
 		Paytable:   payTable,   // 賠率表
 		Rows:       rows,       // 列數
 		Cols:       cols,       // 行數
+		minLen:     3,          // 最小連線長度
 		Mode:       mode,       // 算分模式
 	}
 
@@ -186,10 +188,6 @@ func (c *Config) validate() error {
 		if len(c.Lines) == 0 {
 			return errors.New("line must not be emypt")
 		}
-		// 檢查 線獎
-		// if len(c.Lines) > 0 {
-		// 	for i, line :=
-		// }
 	}
 
 	if c.Mode == ModeWays {
