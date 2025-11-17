@@ -43,6 +43,7 @@ func NewSpinCalculator(cfg *Config) *SpinCalculator {
 	return sc
 }
 
+// 不計分符號清單
 func deriveFilterIDs(pay [][]int, wildID uint8) []uint8 {
 	out := make([]uint8, 0, len(pay))
 	for sid, row := range pay {
@@ -60,6 +61,7 @@ func deriveFilterIDs(pay [][]int, wildID uint8) []uint8 {
 	return out
 }
 
+// 計算盤面中特定符號出現次數
 func countSymbol(screen []uint8, id uint8) int {
 	// 給你保留一個「無效」的用法；可刪
 	if id == 0xFF {
@@ -74,6 +76,7 @@ func countSymbol(screen []uint8, id uint8) int {
 	return n
 }
 
+// 判斷 slice 中是否包含某 uint8 元素
 func containsU8(arr []uint8, x uint8) bool {
 	for _, v := range arr {
 		if v == x {
@@ -118,9 +121,6 @@ func CalcLinesGame(s *SpinCalculator, screen []uint8, bet int) *ScreenResult {
 	// 統計 C1（scatter）次數
 	r.C1Win = countSymbol(screen, s.C1Id)
 
-	rows, cols := s.Rows, s.Cols
-	wildID := s.W1Id // uint8
-	minLen := s.minLen
 	linesLen := len(s.Lines)
 
 	totalLinePay := 0
@@ -138,13 +138,13 @@ func CalcLinesGame(s *SpinCalculator, screen []uint8, bet int) *ScreenResult {
 		pendingWilds := 0
 
 		// 從左到右掃這條線
-		for j := 0; j < cols; j++ {
+		for j := 0; j < s.Cols; j++ {
 			rowIndex := s.Lines[i][j]
-			idx := j*rows + rowIndex
+			idx := j*s.Rows + rowIndex
 			sid := screen[idx] // uint8
 
 			// 開頭連續 Wild 數
-			if wildContinue && sid == wildID {
+			if wildContinue && sid == s.W1Id {
 				wildCount++
 			} else {
 				wildContinue = false
@@ -152,7 +152,7 @@ func CalcLinesGame(s *SpinCalculator, screen []uint8, bet int) *ScreenResult {
 
 			// 尚未決定得分符號
 			if !symStarted {
-				if sid == wildID {
+				if sid == s.W1Id {
 					// 前置 Wild 先累計，遇到第一個可計分符號時再併入
 					pendingWilds++
 					continue
@@ -169,7 +169,7 @@ func CalcLinesGame(s *SpinCalculator, screen []uint8, bet int) *ScreenResult {
 			}
 
 			// 已決定得分符號，延伸連線：同符號或 Wild 都可
-			if sid == symId || sid == wildID {
+			if sid == symId || sid == s.W1Id {
 				symCount++
 			} else {
 				break
@@ -177,7 +177,7 @@ func CalcLinesGame(s *SpinCalculator, screen []uint8, bet int) *ScreenResult {
 		}
 
 		// 未達最小連線長度 → 0 分（仍可記錄 line 結果，win=0）
-		if symCount < minLen && wildCount < minLen {
+		if symCount < s.minLen && wildCount < s.minLen {
 			lineResults = append(lineResults, LineResult{
 				sym:    0, // 無得分；若想避免混淆可自訂常數 255 表示「無」
 				cnt:    0,
@@ -196,7 +196,7 @@ func CalcLinesGame(s *SpinCalculator, screen []uint8, bet int) *ScreenResult {
 				symPay = row[k]
 			}
 		}
-		wildRow := s.Paytable[int(wildID)]
+		wildRow := s.Paytable[int(s.W1Id)]
 		wildPay := 0
 		if wc := wildCount - 1; wc >= 0 && wc < len(wildRow) {
 			wildPay = wildRow[wc]
@@ -207,7 +207,7 @@ func CalcLinesGame(s *SpinCalculator, screen []uint8, bet int) *ScreenResult {
 		winCnt := symCount
 		winPay := symPay
 		if wildPay > symPay {
-			winSym = wildID
+			winSym = s.W1Id
 			winCnt = wildCount
 			winPay = wildPay
 		}
@@ -222,7 +222,7 @@ func CalcLinesGame(s *SpinCalculator, screen []uint8, bet int) *ScreenResult {
 	}
 
 	// 本把贏分（以 lineBet = bet 為基數）
-	r.Win = totalLinePay * bet
+	r.Win = totalLinePay * bet / linesLen
 	r.LineResult = &lineResults
 	return r
 }
