@@ -36,13 +36,15 @@ func runner() error {
 		// 執行模擬
 		screen := sg.GenScreen()
 		result := sc.calcFn(sc, screen, bet)
-		// fmt.Println("Result:", result)
 
 		// 更新狀態
 		totalBet += bet        // 總下注
 		totalWin += result.Win // 總贏分
 
 		// 顯示進度
+		if (i+1)%100000 == 0 {
+			fmt.Printf("Completed %d spins...\n", i+1)
+		}
 	}
 
 	if totalBet == 0 {
