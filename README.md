@@ -3,7 +3,7 @@
 [程式計劃書](https://hackmd.io/@chiSean/rkGvg3Wxbl) 
 [PAR sheet](https://docs.google.com/spreadsheets/d/1WncTL93uOFgXVq_zC1yJQky_ZsAkpolA5LZoVFo4OuE/edit?usp=sharing)
 
-## 執行
+<!-- ## 執行
 
 ### 下載專案
 
@@ -15,7 +15,7 @@
 
 ``` shell=
 
-```
+``` -->
 
 ## 完成進度
 
