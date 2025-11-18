@@ -111,7 +111,8 @@ func CalcLinesGame(s *SpinCalculator, screen []uint8, bet int) *ScreenResult {
 	r := s.sr
 
 	r.C1Win, r.Win = 0, 0
-	linesLen := len(s.cfg.Lines)    // 線路數量
+	linesLen := len(s.cfg.Lines) // 線路數量
+	// r.LineResult = make([]LineResult, 0, linesLen)
 	r.WinDetails = r.WinDetails[:0] // 清空邏輯長度，保留原指針與空間
 
 	totalLinePay := 0 // 累積線路賠分

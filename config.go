@@ -1,6 +1,9 @@
 package main
 
-import "errors"
+import (
+	"errors"
+	"log"
+)
 
 // type SymbolID uint8 // 之後可以統一使用
 type GameMode int
@@ -145,10 +148,11 @@ func (c *Config) Init() error {
 	}
 
 	// 5. 平坦化線路清單
-	c.FlatLines = make([]int, len(c.Lines)*c.Cols)
+	c.FlatLines = make([]int, len(c.Lines)*c.Cols) // 預先分配空間
 	for i, line := range c.Lines {
 		for j, pos := range line {
 			c.FlatLines[i*c.Cols+j] = j*c.Rows + pos
+
 		}
 	}
 
@@ -175,43 +179,43 @@ func (c *Config) validate() error {
 
 	// 1. Rows/Cols
 	if c.Rows <= 0 {
-		return errors.New("rows must > 0")
+		log.Fatal("rows must > 0")
 	}
 
 	if c.Cols <= 0 {
-		return errors.New("cols must > 0")
+		log.Fatal("cols must > 0")
 	}
 	// 2. 輪帶
 	if len(c.ReelStrips) != c.Cols {
-		return errors.New("reelStrips length  must equal Cols")
+		log.Fatal("reelStrips length  must equal Cols")
 	}
 
 	// 3. 符號清單，這邊怪怪的感覺有很多例外
 	symLen := len(c.Symbols)
 	if symLen == 0 {
-		return errors.New("symbols must not be empty")
+		log.Fatal("symbols must not be empty")
 	}
 
 	// 4. Line Mode
 	if c.Mode == ModeLines {
 		if len(c.Lines) == 0 {
-			return errors.New("line must not be emypt")
+			log.Fatal("line must not be emypt")
 		}
 	}
 
 	if c.Mode == ModeWays {
-		return errors.New("未實作")
+		log.Fatal("未實作")
 	}
 
 	// 5. PayTable： 每個符號 5 欄（1~5 連）
 	if len(c.Paytable) != symLen {
-		return errors.New("paytable size not correct")
+		log.Fatal("paytable size not correct")
 	}
 
 	// 6. 模式檢查
 	// 這邊應該改成不存在於 GameMode enum 清單中，或是 =0
 	if c.Mode != ModeLines && c.Mode != ModeWays {
-		return errors.New("invalid mode")
+		log.Fatal("invalid mode")
 	}
 
 	return nil
