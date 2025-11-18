@@ -26,8 +26,8 @@ func runner() error {
 	sc := NewSpinCalculator(cfg)
 
 	// 4. 初始化模擬參數
-	rounds := 1_000_000_0 // 模擬次數
-	bet := 1000           // Bet: 一次 spin 下注分數
+	rounds := 1 // 模擬次數
+	bet := 1000 // Bet: 一次 spin 下注分數
 	totalBet := 0
 	totalWin := 0
 	start := time.Now() // 起始時間
@@ -42,10 +42,8 @@ func runner() error {
 		totalBet += bet        // 總下注
 		totalWin += result.Win // 總贏分
 
-		// // 顯示進度
-		// if (i+1)%100000 == 0 {
-		// 	fmt.Printf("Completed %d spins...\n", i+1)
-		// }
+		//  顯示進度
+
 	}
 
 	if totalBet == 0 {

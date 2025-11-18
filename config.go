@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"log"
 )
 
@@ -150,11 +151,16 @@ func (c *Config) Init() error {
 	// 5. 平坦化線路清單
 	c.FlatLines = make([]int, len(c.Lines)*c.Cols) // 預先分配空間
 	for i, line := range c.Lines {
+		fmt.Println("Line:", line)
+		fmt.Println("i:", i)
 		for j, pos := range line {
-			c.FlatLines[i*c.Cols+j] = j*c.Rows + pos
+			c.FlatLines[i*c.Cols+j] = j*c.Rows + pos // j*c.Rows + pos -> 索引值
+			fmt.Printf("FlatLines[%d]=%d\n", i*c.Cols+j, j*c.Rows+pos)
 
 		}
 	}
+	fmt.Println("-------------------------------------------------")
+	fmt.Println("FlatLines:", c.FlatLines)
 
 	// 6. 更新初始化狀態
 	c.initFlag = true
