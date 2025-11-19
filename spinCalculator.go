@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 )
 
@@ -40,14 +39,14 @@ type SpinCalculator struct {
 // 不計分符號清單
 func deriveFilter(pay [][]int, wildID uint8) uint64 {
 	out := uint64(0) // 0x00000000000000
-	fmt.Println("-------------------------------------------------")
-	fmt.Println("out:", out)
+	// fmt.Println("-------------------------------------------------")
+	// fmt.Println("out:", out)
 	for sid, row := range pay {
-		fmt.Println("sid:", sid)
-		fmt.Println("row:", row)
+		// fmt.Println("sid:", sid)
+		// fmt.Println("row:", row)
 		allZero := true
 		for _, p := range row {
-			fmt.Println("p:", p)
+			// fmt.Println("p:", p)
 			if p != 0 {
 				allZero = false
 				break
