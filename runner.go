@@ -17,8 +17,8 @@ func runner() error {
 	}
 
 	// 2. 建立亂數生成
-	randSeed := rand.NewSource(123456789) // 固定 randSeed
-	// randSeed := rand.NewSource(time.Now().UnixNano())
+	// randSeed := rand.NewSource(123456789) // 固定 randSeed
+	randSeed := rand.NewSource(time.Now().UnixNano())
 	rng := rand.New(randSeed) // 返回 pointer
 
 	// 3. 建立 生成盤面、算分實例
@@ -26,8 +26,8 @@ func runner() error {
 	sc := NewSpinCalculator(cfg)
 
 	// 4. 初始化模擬參數
-	rounds := 1 // 模擬次數
-	bet := 1000 // Bet: 一次 spin 下注分數
+	rounds := 1000_000_00 // 模擬次數
+	bet := 10             // Bet: 一次 spin 下注分數
 	totalBet := 0
 	totalWin := 0
 	start := time.Now() // 起始時間
