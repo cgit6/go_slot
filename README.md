@@ -50,7 +50,7 @@
 設定擋案錯誤 -> log.Fatal()
 
 
-文件檢查清單
+## 文件檢查清單
 Base Game
 []輪帶表
     []輪帶表內容
@@ -122,3 +122,18 @@ Game Summery
     []re-reigger
     []RTP
     []平均局數
+
+
+
+## code 修正
+
+[v] Bet / line 有小數點問題
+[] C1 有賠率要計算
+    [] 檢視 C1 得分
+    [] 檢視 sym 得分
+    [] 計算 C1 rtp
+    [] 計算 sym rtp
+    ! 現在發現問題，C1 會在 line 中被計算，不知道哪裡有問題
+[] 執行 Free Game
+[] 統計值公式(CV、AllRTP、HitRate、FG trigger)
+

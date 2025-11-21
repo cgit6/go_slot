@@ -1,5 +1,7 @@
 package main
 
+import "github.com/cgit6/go_slot/game"
+
 func main() {
-	runner() // 執行模擬
+	game.Runner() // 執行模擬
 }

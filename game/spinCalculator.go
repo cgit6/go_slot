@@ -1,6 +1,7 @@
-package main
+package game
 
 import (
+	"fmt"
 	"log"
 )
 
@@ -18,10 +19,14 @@ type WinDetail struct {
 
 // 一次 spin 的結果
 type ScreenResult struct {
-	C1Win      int         // 盤面中 C1 (scatter) 出現次數
+	C1Count    int         // 盤面中 C1 (scatter) 出現次數
 	Win        int         // 累積賠分
 	Mode       GameMode    // 算分模式
 	WinDetails []WinDetail // 細項
+
+	// 輔助參數
+	C1Win  int // C1 賠分總和
+	SymWin int // 符號賠分總和
 }
 
 // input SpinCalculator、screen 與 1 次 spin 下注分數
@@ -63,15 +68,12 @@ func deriveFilter(pay [][]int, wildID uint8) uint64 {
 func NewSpinCalculator(cfg *Config) *SpinCalculator {
 	sc := &SpinCalculator{
 		cfg: cfg,
-		sr:  &ScreenResult{},
+		sr:  &ScreenResult{}, // 結果緩存
 	}
-	sc.initCalcFn()
-
-	// 預先建立走線表空間
-	sc.sr.WinDetails = make([]WinDetail, 0, len(cfg.Lines))
-
-	// 使用bitmask判斷是否得分符號
-	sc.filter = deriveFilter(cfg.Paytable, cfg.W1Id)
+	sc.initCalcFn()                                         // 初始化算分方式
+	sc.sr.WinDetails = make([]WinDetail, 0, len(cfg.Lines)) // 預先建立走線表空間
+	sc.filter = deriveFilter(cfg.Paytable, cfg.W1Id)        // 使用bitmask判斷是否得分符號
+	fmt.Println("Non-scoring symbols filter:", sc.filter)
 	return sc
 }
 
@@ -112,18 +114,22 @@ var calcFnMap = map[GameMode]CalcFunc{
 // lines 算分模式
 func CalcLinesGame(s *SpinCalculator, screen []uint8, bet int) *ScreenResult {
 
-	// 初始化結果
+	// 初始化 ScreenResult
 	r := s.sr
 
-	r.C1Win, r.Win = 0, 0
-	linesLen := len(s.cfg.Lines) // 線路數量
-	// r.LineResult = make([]LineResult, 0, linesLen)
-	r.WinDetails = r.WinDetails[:0] // 清空邏輯長度，保留原指針與空間
+	r.C1Count, r.SymWin, r.C1Win, r.Win = 0, 0, 0, 0 // 重置結果
+	linesLen := len(s.cfg.Lines)                     // 線路數量
+	r.WinDetails = r.WinDetails[:0]                  // 清空邏輯長度，保留原指針與空間
 
 	totalLinePay := 0 // 累積線路賠分
 
 	// 計算 C1 出現次數
-	r.C1Win = countSymbol(screen, s.cfg.C1Id)
+	r.C1Count = countSymbol(screen, s.cfg.C1Id)
+
+	if r.C1Count >= s.cfg.minLen {
+		c1Win := s.cfg.Paytable[int(s.cfg.C1Id)][r.C1Count-1] * bet
+		r.C1Win = c1Win // C1 賠分總和
+	}
 
 	// 逐條線計分
 	for i := 0; i < linesLen; i++ {
@@ -155,6 +161,12 @@ func CalcLinesGame(s *SpinCalculator, screen []uint8, bet int) *ScreenResult {
 				if sid == s.cfg.W1Id {
 					continue
 				}
+
+				// ❗ Scatter 一律不能當線獎符號
+				if sid == s.cfg.C1Id {
+					break
+				}
+
 				// 第一個非 Wild：若是不計分符號（Z1/C1 等），此線只能靠純 Wild
 				if s.filter&(1<<uint64(sid)) != 0 {
 					break
@@ -181,24 +193,24 @@ func CalcLinesGame(s *SpinCalculator, screen []uint8, bet int) *ScreenResult {
 
 		// 5. 計算兩種賠率
 
-		// 5.1. 得分符號賠率
-		symPay := 0
+		// 5.1. 獲取得分符號賠率
+		symPay := 0                                 // 得分符號賠率
 		if symStarted && symCount >= s.cfg.minLen { // 只做「是否該算」的必要判斷
-			symPay = s.cfg.Paytable[int(symId)][symCount-1]
+			symPay = s.cfg.Paytable[int(symId)][symCount-1] // 獲取賠率
 		}
 
-		// 5.2.Wild 賠率
-
+		// 5.2. 獲取 Wild 賠率
 		wildPay := 0 // W1 賠率
 		if wildCount >= s.cfg.minLen {
-			wildPay = s.cfg.Paytable[int(s.cfg.W1Id)][wildCount-1]
+			wildPay = s.cfg.Paytable[int(s.cfg.W1Id)][wildCount-1] // 獲取賠率
 		}
 
 		// 6. 取較大者
-		winSym := symId
-		winCnt := symCount
-		winPay := symPay
+		winSym := symId    // 得分符號
+		winCnt := symCount // 連線數量
+		winPay := symPay   // 線獎賠率
 
+		// 6.1. 如果 Wild 賠率較大
 		if wildPay > symPay {
 			winSym = s.cfg.W1Id
 			winCnt = wildCount
@@ -213,10 +225,17 @@ func CalcLinesGame(s *SpinCalculator, screen []uint8, bet int) *ScreenResult {
 			win:    winPay, // 賠分
 			lineId: i,      // 線路 ID
 		}) // 更新結果
+		// if winSym == 1 {
+		// 	fmt.Println("winSym:", winSym)
+		// 	fmt.Println("winCnt:", winCnt)
+		// 	fmt.Println("winPay:", winPay)
+		// }
 	}
 
-	// 一次 spin 盤面得結果
-	r.Win = totalLinePay * bet / linesLen // 總賠分
+	// 一次 spin 盤面贏分結果
+	r.SymWin = totalLinePay * bet / linesLen // 符號賠分總和
+	r.Win = r.C1Win + r.SymWin               // 總賠分(sym + c1)
+	// r.Win = totalLinePay * bet / linesLen // 總賠分
 	return r
 }
 
