@@ -127,8 +127,7 @@ func CalcLinesGame(s *SpinCalculator, screen []uint8, bet int) *ScreenResult {
 	r.C1Count = countSymbol(screen, s.cfg.C1Id)
 
 	if r.C1Count >= s.cfg.minLen {
-		c1Win := s.cfg.Paytable[int(s.cfg.C1Id)][r.C1Count-1] * bet
-		r.C1Win = c1Win // C1 賠分總和
+		r.C1Win = s.cfg.Paytable[int(s.cfg.C1Id)][r.C1Count-1] * bet // C1 賠分總和
 	}
 
 	// 逐條線計分
@@ -147,7 +146,7 @@ func CalcLinesGame(s *SpinCalculator, screen []uint8, bet int) *ScreenResult {
 			// 1. 獲取該位置符號
 			sid := screen[s.cfg.FlatLines[i*s.cfg.Cols+j]] // 平坦化線路清單
 
-			// 2. 開頭連續 Wild 數
+			// 2. 連續 Wild 數
 			if wildContinue && sid == s.cfg.W1Id {
 				wildCount++
 			} else {
@@ -225,17 +224,11 @@ func CalcLinesGame(s *SpinCalculator, screen []uint8, bet int) *ScreenResult {
 			win:    winPay, // 賠分
 			lineId: i,      // 線路 ID
 		}) // 更新結果
-		// if winSym == 1 {
-		// 	fmt.Println("winSym:", winSym)
-		// 	fmt.Println("winCnt:", winCnt)
-		// 	fmt.Println("winPay:", winPay)
-		// }
 	}
 
 	// 一次 spin 盤面贏分結果
 	r.SymWin = totalLinePay * bet / linesLen // 符號賠分總和
 	r.Win = r.C1Win + r.SymWin               // 總賠分(sym + c1)
-	// r.Win = totalLinePay * bet / linesLen // 總賠分
 	return r
 }
 

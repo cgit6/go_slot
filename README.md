@@ -1,7 +1,7 @@
 #  [程式 / Golang] 11/11 判斷得分
 
 [程式計劃書](https://hackmd.io/@chiSean/rkGvg3Wxbl) 
-[PAR sheet](https://docs.google.com/spreadsheets/d/1WncTL93uOFgXVq_zC1yJQky_ZsAkpolA5LZoVFo4OuE/edit?usp=sharing)
+[PAR sheet](https://docs.google.com/spreadsheets/d/1ZZUYusikSiQDiVpgFvjWn6BTJfpeQmHp8YFo_HBsEkw/edit?usp=sharing)
 
 <!-- ## 執行
 
@@ -128,12 +128,19 @@ Game Summery
 ## code 修正
 
 [v] Bet / line 有小數點問題
-[] C1 有賠率要計算
-    [] 檢視 C1 得分
-    [] 檢視 sym 得分
-    [] 計算 C1 rtp
-    [] 計算 sym rtp
-    ! 現在發現問題，C1 會在 line 中被計算，不知道哪裡有問題
+[v] C1 有賠率要計算
+    [v] 檢視 C1 得分
+    [v] 檢視 sym 得分
+    [v] 計算 C1 rtp
+    [v] 計算 sym rtp
+    [v] ! 現在發現問題 C1 會在 line 中被計算，不知道哪裡有問題
 [] 執行 Free Game
+    [] 判斷觸發條件對應局數 {3,4,5} C1 -> {10,12,15} 寫在設定欄位中
+    [] 計算初始 10 局 FG spin
+    [] re-trigger 追加局數(所以不能用 for 的概念要用 while 的寫法)
+    [] wild multiple x3 不累積
+    [] 返回結果 rtp，計算統計值
 [] 統計值公式(CV、AllRTP、HitRate、FG trigger)
 
+## 搞懂
+[] 
