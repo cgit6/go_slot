@@ -12,4 +12,8 @@
 
   //（可選）使用更嚴謹的 gofumpt 風格
   "go.formatTool": "gofumpt"
+
+  "[markdown]": {
+  "editor.formatOnSave": false
+}
 }

@@ -30,7 +30,7 @@ type ScreenResult struct {
 }
 
 // input SpinCalculator、screen 與 1 次 spin 下注分數
-type CalcFunc func(*SpinCalculator, []uint8, int) *ScreenResult // 接收 *SpinCalculator
+type CalcFunc func(*SpinCalculator, []uint8, int, int) *ScreenResult // 接收 *SpinCalculator
 
 type SpinCalculator struct {
 	cfg    *Config       // 匿名嵌入
@@ -112,22 +112,20 @@ var calcFnMap = map[GameMode]CalcFunc{
 // ------- 不同算分模式的內部函數 -------
 
 // lines 算分模式
-func CalcLinesGame(s *SpinCalculator, screen []uint8, bet int) *ScreenResult {
+func CalcLinesGame(s *SpinCalculator, screen []uint8, bet int, game int) *ScreenResult {
 
 	// 初始化 ScreenResult
-	r := s.sr
-
-	r.C1Count, r.SymWin, r.C1Win, r.Win = 0, 0, 0, 0 // 重置結果
-	linesLen := len(s.cfg.Lines)                     // 線路數量
-	r.WinDetails = r.WinDetails[:0]                  // 清空邏輯長度，保留原指針與空間
+	s.sr.C1Count, s.sr.SymWin, s.sr.C1Win, s.sr.Win = 0, 0, 0, 0 // 重置結果
+	linesLen := len(s.cfg.Lines)                                 // 線路數量
+	s.sr.WinDetails = s.sr.WinDetails[:0]                        // 清空邏輯長度，保留原指針與空間
 
 	totalLinePay := 0 // 累積線路賠分
 
 	// 計算 C1 出現次數
-	r.C1Count = countSymbol(screen, s.cfg.C1Id)
+	s.sr.C1Count = countSymbol(screen, s.cfg.C1Id)
 
-	if r.C1Count >= s.cfg.minLen {
-		r.C1Win = s.cfg.Paytable[int(s.cfg.C1Id)][r.C1Count-1] * bet // C1 賠分總和
+	if s.sr.C1Count >= s.cfg.minLen {
+		s.sr.C1Win = s.cfg.Paytable[int(s.cfg.C1Id)][s.sr.C1Count-1] * bet // C1 賠分總和
 	}
 
 	// 逐條線計分
@@ -140,15 +138,23 @@ func CalcLinesGame(s *SpinCalculator, screen []uint8, bet int) *ScreenResult {
 		symStarted := false // 是否已確定得分符號
 		symCount := 0       // 符號連線數量
 
+		HasW1 := false // 這條線是否有 W1 出現
+
 		// 從左到右掃這條線
 		for j := 0; j < s.cfg.Cols; j++ {
 
 			// 1. 獲取該位置符號
 			sid := screen[s.cfg.FlatLines[i*s.cfg.Cols+j]] // 平坦化線路清單
 
+			// 連線中有沒有包含 W1Id
+			if sid == s.cfg.W1Id {
+				HasW1 = true
+			}
+
 			// 2. 連續 Wild 數
 			if wildContinue && sid == s.cfg.W1Id {
 				wildCount++
+
 			} else {
 				wildContinue = false
 			}
@@ -157,11 +163,13 @@ func CalcLinesGame(s *SpinCalculator, screen []uint8, bet int) *ScreenResult {
 
 			// 3.1. 尚未決定得分符號
 			if !symStarted {
+
 				if sid == s.cfg.W1Id {
+					HasW1 = true // ?? 放這裡不行
 					continue
 				}
 
-				// ❗ Scatter 一律不能當線獎符號
+				// Scatter 一律不能當線獎符號
 				if sid == s.cfg.C1Id {
 					break
 				}
@@ -174,6 +182,7 @@ func CalcLinesGame(s *SpinCalculator, screen []uint8, bet int) *ScreenResult {
 				symId = sid
 				symStarted = true
 				symCount = wildCount + 1 // 包含前面的 Wild
+				// HasW1 = true
 				continue
 			}
 
@@ -181,7 +190,7 @@ func CalcLinesGame(s *SpinCalculator, screen []uint8, bet int) *ScreenResult {
 			if sid == symId || sid == s.cfg.W1Id {
 				symCount++
 			} else {
-				break // 如果開頭直接是 C1 直接結束
+				break // 如果開頭直接是 C1 這種非線獎得分符號直接結束
 			}
 		}
 
@@ -191,7 +200,6 @@ func CalcLinesGame(s *SpinCalculator, screen []uint8, bet int) *ScreenResult {
 		}
 
 		// 5. 計算兩種賠率
-
 		// 5.1. 獲取得分符號賠率
 		symPay := 0                                 // 得分符號賠率
 		if symStarted && symCount >= s.cfg.minLen { // 只做「是否該算」的必要判斷
@@ -216,9 +224,13 @@ func CalcLinesGame(s *SpinCalculator, screen []uint8, bet int) *ScreenResult {
 			winPay = wildPay
 		}
 
+		if game == FreeGame && HasW1 {
+			winPay *= 3 // 免費遊戲中，若該線有 W1 出現，賠率翻倍
+		}
+
 		// 7. 更新結果
 		totalLinePay += winPay
-		r.WinDetails = append(r.WinDetails, WinDetail{
+		s.sr.WinDetails = append(s.sr.WinDetails, WinDetail{
 			symbol: winSym, // 得分符號
 			cnt:    winCnt, // 連線數量
 			win:    winPay, // 賠分
@@ -227,13 +239,13 @@ func CalcLinesGame(s *SpinCalculator, screen []uint8, bet int) *ScreenResult {
 	}
 
 	// 一次 spin 盤面贏分結果
-	r.SymWin = totalLinePay * bet / linesLen // 符號賠分總和
-	r.Win = r.C1Win + r.SymWin               // 總賠分(sym + c1)
-	return r
+	s.sr.SymWin = totalLinePay * bet / linesLen // 符號賠分總和
+	s.sr.Win = s.sr.C1Win + s.sr.SymWin         // 總賠分(sym + c1)
+	return s.sr
 }
 
 // ways 算分模式
-func CalcWaysGame(s *SpinCalculator, screen []uint8, bet int) *ScreenResult {
+func CalcWaysGame(s *SpinCalculator, screen []uint8, bet int, game int) *ScreenResult {
 	// 未實做
 	return s.sr
 }

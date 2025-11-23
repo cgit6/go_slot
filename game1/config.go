@@ -5,22 +5,53 @@ import (
 	"log"
 )
 
-// type SymbolID uint8 // 之後可以統一使用
-type GameMode int
+type GameMode int // type SymbolID uint8 // 之後可以統一使用
+type SpinTable map[int]int
 
+// 算分模式
 const (
 	ModeUnknown GameMode = iota // 0 -> unknown
 	ModeLines                   // 1 -> Line
 	ModeWays                    // 2 -> Ways
 )
 
-// 輪帶表
-var REELSTRIPS = [][]uint8{
+// C1 觸發 FG spins
+var C1ToFG = SpinTable{
+	3: 10, // 3 顆 C1 觸發 10 局免費遊戲
+	4: 10, // 4 顆 C1 觸發 10 局免費遊戲
+	5: 10, // 5 顆 C1 觸發 10 局免費遊戲
+}
+
+// C1 觸發 re-trigger FG spins
+var ReTriggerFGSpins = SpinTable{
+	3: 5, // 3 顆 C1 觸發 10 局免費遊戲
+	4: 5, // 4 顆 C1 觸發 10 局免費遊戲
+	5: 5, // 5 顆 C1 觸發 10 局免費遊戲
+}
+
+// Game Mode
+const (
+	GameUnknown int = iota // 0 -> unknown
+	BaseGame               // 1 -> BaseGame
+	FreeGame               // 2 -> FreeGame
+)
+
+// BG 輪帶表
+var BGREELSTRIPS = [][]uint8{
 	{3, 4, 5, 6, 7, 8, 9, 10, 1, 2}, // 第 1 軸
 	{3, 4, 5, 6, 7, 8, 9, 10, 1, 2}, // 第 2 軸
 	{3, 4, 5, 6, 7, 8, 9, 10, 1, 2}, // 第 3 軸
 	{3, 4, 5, 6, 7, 8, 9, 10, 1, 2}, // 第 4 軸
 	{3, 4, 5, 6, 7, 8, 9, 10, 1, 2}, // 第 5 軸
+}
+
+// FG 輪帶表
+var FGREELSTRIPS = [][]uint8{
+	{3, 4, 5, 6, 7, 8, 9, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, // 第 1 軸
+	{3, 4, 5, 6, 7, 8, 9, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, // 第 2 軸
+	{3, 4, 5, 6, 7, 8, 9, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, // 第 3 軸
+	{3, 4, 5, 6, 7, 8, 9, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, // 第 4 軸
+	{3, 4, 5, 6, 7, 8, 9, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, // 第 5 軸
 }
 
 // 11 個有效符號           0      1     2     3     4     5     6     7     8     9     10
@@ -102,6 +133,8 @@ func NewConfig(reelStrips [][]uint8, symbols []string, lines [][]int, payTable [
 		Cols:       cols,       // 行數
 		minLen:     3,          // 最小連線長度(改成用公式判斷)
 		Mode:       mode,       // 算分模式
+		initFlag:   false,      // 初始化旗標
+
 	}
 
 	// 2. 執行初始化

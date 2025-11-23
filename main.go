@@ -1,7 +1,7 @@
 package main
 
-import "github.com/cgit6/go_slot/game"
+import game1 "github.com/cgit6/go_slot/game1" // line game
 
 func main() {
-	game.Runner() // 執行模擬
+	game1.Runner() // 執行模擬
 }
