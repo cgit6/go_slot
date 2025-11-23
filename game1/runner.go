@@ -60,6 +60,9 @@ func Runner() error {
 	hit := 0     // 得分次數
 	trigger := 0 // fg 觸發率
 
+	totalSpins := 0 // 總 spins 次數
+	spinHits := 0   // 中獎 spin 次數
+
 	// 5. 執行模擬
 	round := 1 // 從第一次開始
 	for ; round <= rounds; round++ {
@@ -70,6 +73,12 @@ func Runner() error {
 		baseGameResult := bgsc.calcFn(bgsc, screen, bet, BaseGame) // 1 spin base game result
 
 		roundWin += baseGameResult.Win
+
+		// 更新 spin 值
+		totalSpins++
+		if baseGameResult.Win > 0 {
+			spinHits++
+		}
 
 		// 執行 free game 模擬
 		if fgRound, ok := C1ToFG[baseGameResult.C1Count]; ok { // 如果 BG C1 數量 3,4,5 顆，執行 10,10,10 局免費遊戲，我利用 map 限定事件發生範圍，避免意外情況發生。
@@ -96,6 +105,13 @@ func Runner() error {
 				// ------------------------------------------------------
 
 				totalWin += freeGameResult.Win // 總贏分
+
+				// 更新 spins
+				totalSpins++
+				if freeGameResult.Win > 0 {
+					spinHits++
+				}
+
 				// 更新當前局數
 				fg++
 			}
@@ -162,7 +178,8 @@ func Runner() error {
 		fmt.Printf("fg trigger rate=%f\n", float64(trigger)/float64(rounds))
 
 		// hit rate
-		fmt.Printf("hit rate=%f\n", float64(hit)/float64(rounds))
+		fmt.Printf("hit rate(pay spin)=%f\n", float64(hit)/float64(rounds))
+		fmt.Printf("hit rate(any spin)=%f\n", float64(spinHits)/float64(totalSpins))
 	}
 
 	return nil
