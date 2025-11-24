@@ -1,7 +1,6 @@
 package game
 
 import (
-	"fmt"
 	"log"
 )
 
@@ -61,6 +60,7 @@ func deriveFilter(pay [][]int, wildID uint8) uint64 {
 			out |= 1 << uint64(sid)
 		}
 	}
+	// fmt.Println("Derived non-scoring symbols filter:", out)
 	return out
 }
 
@@ -73,7 +73,7 @@ func NewSpinCalculator(cfg *Config) *SpinCalculator {
 	sc.initCalcFn()                                         // 初始化算分方式
 	sc.sr.WinDetails = make([]WinDetail, 0, len(cfg.Lines)) // 預先建立走線表空間
 	sc.filter = deriveFilter(cfg.Paytable, cfg.W1Id)        // 使用bitmask判斷是否得分符號
-	fmt.Println("Non-scoring symbols filter:", sc.filter)
+	// fmt.Println("Non-scoring symbols filter:", sc.filter)
 	return sc
 }
 
@@ -164,8 +164,9 @@ func CalcLinesGame(s *SpinCalculator, screen []uint8, bet int, game int) *Screen
 			// 3.1. 尚未決定得分符號
 			if !symStarted {
 
+				// 判斷 W1 是否出現在得分線上
 				if sid == s.cfg.W1Id {
-					HasW1 = true // ?? 放這裡不行
+					HasW1 = true
 					continue
 				}
 
@@ -178,6 +179,7 @@ func CalcLinesGame(s *SpinCalculator, screen []uint8, bet int, game int) *Screen
 				if s.filter&(1<<uint64(sid)) != 0 {
 					break
 				}
+
 				// 合法得分符號確立
 				symId = sid
 				symStarted = true

@@ -37,11 +37,11 @@ func Runner() error {
 	fgsc := NewSpinCalculator(fgCfg)
 
 	// 4. 初始化模擬參數
-	rounds := 1000_000_0 // 模擬次數
-	bet := len(LINES)    // Bet: 一次 spin 下注分數，保持與 paytable 長度一致避免小數點產生
-	totalBet := 0        // 總下注
-	totalWin := 0        // 累積贏分
-	start := time.Now()  // 起始時間
+	rounds := 1000_000_000 // 模擬次數
+	bet := len(LINES)      // Bet: 一次 spin 下注分數，保持與 paytable 長度一致避免小數點產生
+	totalBet := 0          // 總下注
+	totalWin := 0          // 累積贏分
+	start := time.Now()    // 起始時間
 
 	// 基礎驗證
 	// ------------------------------------------------------
@@ -128,7 +128,7 @@ func Runner() error {
 		totalWin += baseGameResult.Win // 總贏分
 
 		// 計算樣本標準差 Welford 算法
-		x := float64(roundWin) / float64(bet)
+		x := float64(roundWin) / float64(bet) // 1 pay spin get pay value
 
 		delta := float64(x) - mean
 		mean += delta / float64(round)
@@ -179,7 +179,7 @@ func Runner() error {
 
 		// hit rate
 		fmt.Printf("hit rate(pay spin)=%f\n", float64(hit)/float64(rounds))
-		fmt.Printf("hit rate(any spin)=%f\n", float64(spinHits)/float64(totalSpins))
+		// fmt.Printf("hit rate(any spin)=%f\n", float64(spinHits)/float64(totalSpins))
 	}
 
 	return nil
