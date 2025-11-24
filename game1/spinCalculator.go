@@ -170,12 +170,17 @@ func CalcLinesGame(s *SpinCalculator, screen []uint8, bet int, game int) *Screen
 					continue
 				}
 
-				// Scatter 一律不能當線獎符號
+				// C1 一律不能當線獎符號
 				if sid == s.cfg.C1Id {
 					break
 				}
 
 				// 第一個非 Wild：若是不計分符號（Z1/C1 等），此線只能靠純 Wild
+				// if sid == s.cfg.C1Id {
+				// 	fmt.Println("??? id", sid)
+				// 	fmt.Println("???", s.filter&(1<<uint64(sid)))
+				// }
+
 				if s.filter&(1<<uint64(sid)) != 0 {
 					break
 				}

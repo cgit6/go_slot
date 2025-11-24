@@ -145,17 +145,17 @@ Game Summery
     [v] re-trigger 追加局數(所以不能用 for 的概念要用 while 的寫法)
     [v] 返回結果 rtp，計算統計值
 
-    [] 如果沒有 W1 的時候數值是否依舊正確?
+    [v] 如果沒有 W1 的時候數值是否依舊正確?
         [v] 如果 乘數是 1 的情況下數值誤差極小
         [] 如果沒有 W1 數值依然正確 
 
 [] 統計值公式(CV、RTP、得分率、FG 觸發率)
     [v] CV 值計算 樣本標準差 / 樣本平均值
-        [] 計算 樣本標準差，需要樣本數、樣本平均值、樣本值。
+        [v] 計算 樣本標準差，需要樣本數、樣本平均值、樣本值。
         std = sqrt((樣本值 - 樣本平均值)^2 / (樣本數 - 1))
-        [] 計算 rtp 
-        [] only base game cv -> 看 bg 平不平順
-        [] only free game cv -> 看 fg 平不平順
+        [v] 計算 rtp 
+        [-] only base game cv -> 看 bg 平不平順
+        [-] only free game cv -> 看 fg 平不平順
     [v] RTP all Wins / all Bet
     [-] 得分率 1 spin > 0 次數 / 總模擬次數
         [v] 支付 spin 為單位
