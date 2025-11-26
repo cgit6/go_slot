@@ -162,3 +162,7 @@ Game Summery
         [] 獨立一局 spin 為單位
     [v] FG 觸發率 執行 FG 次數/ 總模擬次數
     
+[] CV= 9
+[] rtp= 96-97%
+[] hit rate= 30%-40%
+[] trigger= 0.83%

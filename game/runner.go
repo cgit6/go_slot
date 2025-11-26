@@ -37,8 +37,8 @@ func Runner() error {
 	fgsc := NewSpinCalculator(fgCfg)
 
 	// 4. 初始化模擬參數
-	rounds := 1000_000_00 // 模擬次數
-	bet := len(LINES)     // Bet: 一次 spin 下注分數，保持與 paytable 長度一致避免小數點產生
+	rounds := 1000_000_0 // 模擬次數
+	bet := len(LINES)    // Bet: 一次 spin 下注分數，保持與 paytable 長度一致避免小數點產生
 	// 統計值需要的變數值
 	totalBet := 0 // 總下注
 	totalWin := 0 // 累積贏分
@@ -174,10 +174,10 @@ func Runner() error {
 	if round > 1 {
 
 		// 6.1 計算統計值
-		BGC1RTP := float64(BGC1Win) / float64(totalBet)   // base game C1 rtp
-		BGSymRTP := float64(BGSymWin) / float64(totalBet) // base game 得分符號 rtp
-		FGC1RTP := float64(FGC1Win) / float64(totalBet)   // free game C1 rtp
-		FGSymRTP := float64(FGSymWin) / float64(totalBet) // free game 得分符號 rtp
+		// BGC1RTP := float64(BGC1Win) / float64(totalBet)   // base game C1 rtp
+		// BGSymRTP := float64(BGSymWin) / float64(totalBet) // base game 得分符號 rtp
+		// FGC1RTP := float64(FGC1Win) / float64(totalBet)   // free game C1 rtp
+		// FGSymRTP := float64(FGSymWin) / float64(totalBet) // free game 得分符號 rtp
 		// ---------------------------
 		// Total Game
 		rtp := float64(totalWin) / float64(totalBet) // RTP (倍數)
@@ -185,36 +185,36 @@ func Runner() error {
 		stdTotal := math.Sqrt(varTotal)
 		cvTotal := stdTotal / rtp // 這裡用 rtp 跟 meanTotal 差異只會在數值精度
 
-		// Base Game （每個付費 spin 的 BG 贏分）
-		varBG := m2BG / float64(nBG-1)
-		stdBG := math.Sqrt(varBG)
-		// BG 的平均倍數就是 meanBG （也可以用 BGC1RTP + BGSymRTP 驗證）
-		cvBG := stdBG / meanBG
+		// // Base Game （每個付費 spin 的 BG 贏分）
+		// varBG := m2BG / float64(nBG-1)
+		// stdBG := math.Sqrt(varBG)
+		// // BG 的平均倍數就是 meanBG （也可以用 BGC1RTP + BGSymRTP 驗證）
+		// cvBG := stdBG / meanBG
 
-		// Free Game （每次 FG session 的總贏分）
-		varFG := m2FG / float64(nFG-1)
-		stdFG := math.Sqrt(varFG)
-		cvFG := stdFG / meanFG
+		// // Free Game （每次 FG session 的總贏分）
+		// varFG := m2FG / float64(nFG-1)
+		// stdFG := math.Sqrt(varFG)
+		// cvFG := stdFG / meanFG
 		FGTriggerRate := float64(trigger) / float64(rounds) // Free Game 觸發率
 		hitProd := float64(hit) / float64(rounds)           // game 得分率(一局 pay spin 的 win > 0 次數 / 所有 pay spin 次數)
 
 		// 6.2. 輸出結果
 		fmt.Printf("Elapsed time: %.6f seconds\n", elapsed.Seconds())
-		fmt.Println("----------------------- detail ----------------------------")
-		fmt.Printf("BG C1 Win=%f\n", BGC1RTP)      // base game C1 rtp
-		fmt.Printf("BG Sym Win=%f\n", BGSymRTP)    // base game 得分符號 rtp
-		fmt.Printf("FG C1 Win=%f\n", FGC1RTP)      // Free Game C1 rtp
-		fmt.Printf("FG Sym Win=%f\n", FGSymRTP)    // Free Game 得分符號 rtp
-		fmt.Printf("cv_bg_per_spin=%f\n", cvBG)    // bg cv
-		fmt.Printf("cv_fg_per_session=%f\n", cvFG) // fg cv
+		// fmt.Println("----------------------- detail ----------------------------")
+		// fmt.Printf("BG C1 Win=%f\n", BGC1RTP)      // base game C1 rtp
+		// fmt.Printf("BG Sym Win=%f\n", BGSymRTP)    // base game 得分符號 rtp
+		// fmt.Printf("FG C1 Win=%f\n", FGC1RTP)      // Free Game C1 rtp
+		// fmt.Printf("FG Sym Win=%f\n", FGSymRTP)    // Free Game 得分符號 rtp
+		// fmt.Printf("cv_bg_per_spin=%f\n", cvBG)    // bg cv
+		// fmt.Printf("cv_fg_per_session=%f\n", cvFG) // fg cv
 
 		fmt.Println("----------------------- all ----------------------------")
-		fmt.Printf("TotalBet=%d\n", totalBet)             // 總下注
-		fmt.Printf("TotalWin=%d\n", totalWin)             // 總贏
-		fmt.Printf("RTP=%.6f\n", rtp)                     // rtp
-		fmt.Printf("cv_total=%f\n", cvTotal)              // cv
-		fmt.Printf("fg trigger rate=%f\n", FGTriggerRate) // Free Game 觸發率
-		fmt.Printf("hit rate(pay spin)=%f\n", hitProd)    // 得分率
+		fmt.Printf("TotalBet=%d\n", totalBet)     // 總下注
+		fmt.Printf("TotalWin=%d\n", totalWin)     // 總贏
+		fmt.Printf("RTP=%.6f\n", rtp)             // rtp
+		fmt.Printf("cv=%f\n", cvTotal)            // cv
+		fmt.Printf("trigger=%f\n", FGTriggerRate) // Free Game 觸發率
+		fmt.Printf("hit rate=%f\n", hitProd)      // 得分率
 		// fmt.Printf("hit rate(any spin)=%f\n", float64(spinHits)/float64(totalSpins)) // 每一局獨立看
 	}
 
