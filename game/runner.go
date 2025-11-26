@@ -174,8 +174,8 @@ func Runner() error {
 	if round > 1 {
 
 		// 6.1 計算統計值
-		// BGC1RTP := float64(BGC1Win) / float64(totalBet)   // base game C1 rtp
-		// BGSymRTP := float64(BGSymWin) / float64(totalBet) // base game 得分符號 rtp
+		BGC1RTP := float64(BGC1Win) / float64(totalBet)   // base game C1 rtp
+		BGSymRTP := float64(BGSymWin) / float64(totalBet) // base game 得分符號 rtp
 		// FGC1RTP := float64(FGC1Win) / float64(totalBet)   // free game C1 rtp
 		// FGSymRTP := float64(FGSymWin) / float64(totalBet) // free game 得分符號 rtp
 		// ---------------------------
@@ -200,8 +200,8 @@ func Runner() error {
 
 		// 6.2. 輸出結果
 		fmt.Printf("Elapsed time: %.4f seconds\n", elapsed.Seconds())
-		// fmt.Println("----------------------- detail ----------------------------")
-		// fmt.Printf("BG C1 Win=%f\n", BGC1RTP)      // base game C1 rtp
+		fmt.Println("----------------------- detail ----------------------------")
+		fmt.Printf("BG RTP=%4f\n", BGC1RTP+BGSymRTP) // base game rtp
 		// fmt.Printf("BG Sym Win=%f\n", BGSymRTP)    // base game 得分符號 rtp
 		// fmt.Printf("FG C1 Win=%f\n", FGC1RTP)      // Free Game C1 rtp
 		// fmt.Printf("FG Sym Win=%f\n", FGSymRTP)    // Free Game 得分符號 rtp
