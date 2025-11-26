@@ -199,7 +199,7 @@ func Runner() error {
 		hitProd := float64(hit) / float64(rounds)           // game 得分率(一局 pay spin 的 win > 0 次數 / 所有 pay spin 次數)
 
 		// 6.2. 輸出結果
-		fmt.Printf("Elapsed time: %.6f seconds\n", elapsed.Seconds())
+		fmt.Printf("Elapsed time: %.4f seconds\n", elapsed.Seconds())
 		// fmt.Println("----------------------- detail ----------------------------")
 		// fmt.Printf("BG C1 Win=%f\n", BGC1RTP)      // base game C1 rtp
 		// fmt.Printf("BG Sym Win=%f\n", BGSymRTP)    // base game 得分符號 rtp
@@ -209,12 +209,12 @@ func Runner() error {
 		// fmt.Printf("cv_fg_per_session=%f\n", cvFG) // fg cv
 
 		fmt.Println("----------------------- all ----------------------------")
-		fmt.Printf("TotalBet=%d\n", totalBet)     // 總下注
-		fmt.Printf("TotalWin=%d\n", totalWin)     // 總贏
-		fmt.Printf("RTP=%.6f\n", rtp)             // rtp
-		fmt.Printf("cv=%f\n", cvTotal)            // cv
-		fmt.Printf("trigger=%f\n", FGTriggerRate) // Free Game 觸發率
-		fmt.Printf("hit rate=%f\n", hitProd)      // 得分率
+		fmt.Printf("TotalBet=%d\n", totalBet)       // 總下注
+		fmt.Printf("TotalWin=%d\n", totalWin)       // 總贏
+		fmt.Printf("RTP=%.4f\n", rtp)               // rtp
+		fmt.Printf("cv=%4f\n", cvTotal)             // cv
+		fmt.Printf("trigger=%4f \n", FGTriggerRate) // Free Game 觸發率
+		fmt.Printf("hit rate=%4f \n", hitProd)      // 得分率
 		// fmt.Printf("hit rate(any spin)=%f\n", float64(spinHits)/float64(totalSpins)) // 每一局獨立看
 	}
 
